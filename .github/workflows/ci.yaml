@@ -6,6 +6,9 @@ on:
 jobs:
   build-n-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v2
