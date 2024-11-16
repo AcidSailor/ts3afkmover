@@ -1,0 +1,63 @@
+version: '3.5'
+services:
+  ts3:
+    image: teamspeak
+    container_name: teamspeak
+    restart: always
+    depends_on:
+      - ts3db
+    ports:
+      - "9987:9987/udp" # voice
+      - "10011:10011" # raw
+      - "10022:10022" # ssh
+      - "10080:10080" # http
+      - "30033:30033" # files
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ts3server:/var/ts3server/
+      - ./query_ip_allowlist.txt:/var/ts3server/query_ip_allowlist.txt
+    environment:
+      TS3SERVER_DB_PLUGIN: ts3db_mariadb
+      TS3SERVER_DB_SQLCREATEPATH: create_mariadb
+      TS3SERVER_QUERY_PROTOCOLS: ssh,http
+      TS3SERVER_DB_HOST: ts3db
+      TS3SERVER_DB_USER: ts3user
+      TS3SERVER_DB_PASSWORD: aabbcc123
+      TS3SERVER_DB_NAME: teamspeak
+      TS3SERVER_DB_WAITUNTILREADY: 30
+      TS3SERVER_LICENSE: accept
+    networks:
+      - ts3
+  ts3db:
+    image: mariadb
+    container_name: ts3db
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ts3db:/var/lib/mysql
+    environment:
+      MYSQL_USER: ts3user
+      MYSQL_PASSWORD: aabbcc123
+      MYSQL_DATABASE: teamspeak
+      MYSQL_ROOT_PASSWORD: aabbcc123
+      MARIADB_AUTO_UPGRADE: 1
+    networks:
+      - ts3
+  ts3manager:
+    image: joni1802/ts3-manager
+    container_name: ts3manager
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ts3
+    networks:
+      - ts3
+networks:
+  ts3:
+    name: ts3
+volumes:
+  ts3server:
+    name: ts3server
+  ts3db:
+    name: ts3db
