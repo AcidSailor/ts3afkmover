@@ -25,7 +25,7 @@ func NewTs3IdleUsecase(config *configs.Config, logger *slog.Logger,
     }
 }
 
-func (t Ts3IdleUsecase) MoveIdleClients(ctx context.Context) {
+func (t *Ts3IdleUsecase) MoveIdleClients(ctx context.Context) {
     clients := t.Ts3Client.ClientListWithTimes(ctx)
 
     stats := struct {
