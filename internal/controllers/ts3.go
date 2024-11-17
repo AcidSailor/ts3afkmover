@@ -13,8 +13,9 @@ import (
 )
 
 type Ts3Client struct {
-    Config *configs.Config
-    Logger *slog.Logger
+    Config     *configs.Config
+    Logger     *slog.Logger
+    HttpClient *http.Client
 }
 
 type Ts3ResponseStatus struct {
@@ -39,17 +40,17 @@ type Ts3ClientListResponseWithTimes struct {
 }
 
 func NewTs3Client(config *configs.Config, logger *slog.Logger) *Ts3Client {
+
     return &Ts3Client{
         Config: config,
         Logger: logger,
+        HttpClient: &http.Client{
+            Timeout: time.Second * time.Duration(config.RequestTimeout),
+        },
     }
 }
 
-func (t Ts3Client) SendGM(ctx context.Context, message string) bool {
-    httpClient := &http.Client{
-        Timeout: time.Second * time.Duration(t.Config.RequestTimeout),
-    }
-
+func (t *Ts3Client) SendGM(ctx context.Context, message string) bool {
     req, err := http.NewRequestWithContext(ctx, "POST",
         fmt.Sprintf("%s/gm", t.Config.Url),
         strings.NewReader(fmt.Sprintf("{\"msg\": \"%s\"}", message)),
@@ -66,7 +67,7 @@ func (t Ts3Client) SendGM(ctx context.Context, message string) bool {
 
     req.Header.Add("X-Api-Key", fmt.Sprintf("%s", t.Config.ApiKey))
 
-    resp, err := httpClient.Do(req)
+    resp, err := t.HttpClient.Do(req)
 
     if err != nil {
         t.Logger.ErrorContext(
@@ -106,12 +107,7 @@ func (t Ts3Client) SendGM(ctx context.Context, message string) bool {
     return resp.StatusCode == 200 && ts3ResponseStatus.Status.Code == 0
 }
 
-func (t Ts3Client) ClientListWithTimes(ctx context.Context) Ts3ClientListResponseWithTimes {
-
-    httpClient := &http.Client{
-        Timeout: time.Second * time.Duration(t.Config.RequestTimeout),
-    }
-
+func (t *Ts3Client) ClientListWithTimes(ctx context.Context) Ts3ClientListResponseWithTimes {
     req, err := http.NewRequestWithContext(ctx, "POST",
         fmt.Sprintf("%s/%d/clientlist", t.Config.Url, t.Config.VServerId),
         strings.NewReader("{\"-times\": \"\"}"),
@@ -128,7 +124,7 @@ func (t Ts3Client) ClientListWithTimes(ctx context.Context) Ts3ClientListRespons
 
     req.Header.Add("X-Api-Key", fmt.Sprintf("%s", t.Config.ApiKey))
 
-    resp, err := httpClient.Do(req)
+    resp, err := t.HttpClient.Do(req)
 
     if err != nil {
         t.Logger.ErrorContext(
@@ -168,11 +164,7 @@ func (t Ts3Client) ClientListWithTimes(ctx context.Context) Ts3ClientListRespons
     return clientListResp
 }
 
-func (t Ts3Client) MoveClient(ctx context.Context, clid int, cid int) bool {
-    httpClient := &http.Client{
-        Timeout: time.Second * time.Duration(t.Config.RequestTimeout),
-    }
-
+func (t *Ts3Client) MoveClient(ctx context.Context, clid int, cid int) bool {
     req, err := http.NewRequestWithContext(ctx, "POST",
         fmt.Sprintf("%s/%d/clientmove", t.Config.Url, t.Config.VServerId),
         strings.NewReader(fmt.Sprintf("{\"clid\": \"%d\", \"cid\": \"%d\"}",
@@ -190,7 +182,7 @@ func (t Ts3Client) MoveClient(ctx context.Context, clid int, cid int) bool {
 
     req.Header.Add("X-Api-Key", fmt.Sprintf("%s", t.Config.ApiKey))
 
-    resp, err := httpClient.Do(req)
+    resp, err := t.HttpClient.Do(req)
 
     if err != nil {
         t.Logger.ErrorContext(
