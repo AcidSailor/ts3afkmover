@@ -10,4 +10,4 @@ services:
   ts3afkmover_latest: *default_ts3afkmover
   ts3afkmover_version:
     <<: *default_ts3afkmover
-    image: ghcr.io/acidsailor/ts3afkmover:0.3
+    image: ghcr.io/acidsailor/ts3afkmover:0.4

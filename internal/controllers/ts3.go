@@ -65,6 +65,7 @@ func (t *Ts3Client) SendGM(ctx context.Context, message string) bool {
         return false
     }
 
+    req.Header.Add("Content-Type", "application/json")
     req.Header.Add("X-Api-Key", fmt.Sprintf("%s", t.Config.ApiKey))
 
     resp, err := t.HttpClient.Do(req)
@@ -78,10 +79,7 @@ func (t *Ts3Client) SendGM(ctx context.Context, message string) bool {
         return false
     }
 
-    defer func() {
-        io.Copy(io.Discard, resp.Body)
-        resp.Body.Close()
-    }()
+    defer resp.Body.Close()
 
     body, err := io.ReadAll(resp.Body)
     if err != nil {
@@ -122,6 +120,7 @@ func (t *Ts3Client) ClientListWithTimes(ctx context.Context) Ts3ClientListRespon
         return Ts3ClientListResponseWithTimes{}
     }
 
+    req.Header.Add("Content-Type", "application/json")
     req.Header.Add("X-Api-Key", fmt.Sprintf("%s", t.Config.ApiKey))
 
     resp, err := t.HttpClient.Do(req)
@@ -135,10 +134,7 @@ func (t *Ts3Client) ClientListWithTimes(ctx context.Context) Ts3ClientListRespon
         return Ts3ClientListResponseWithTimes{}
     }
 
-    defer func() {
-        io.Copy(io.Discard, resp.Body)
-        resp.Body.Close()
-    }()
+    defer resp.Body.Close()
 
     body, err := io.ReadAll(resp.Body)
     if err != nil {
@@ -180,6 +176,7 @@ func (t *Ts3Client) MoveClient(ctx context.Context, clid int, cid int) bool {
         return false
     }
 
+    req.Header.Add("Content-Type", "application/json")
     req.Header.Add("X-Api-Key", fmt.Sprintf("%s", t.Config.ApiKey))
 
     resp, err := t.HttpClient.Do(req)
@@ -193,10 +190,7 @@ func (t *Ts3Client) MoveClient(ctx context.Context, clid int, cid int) bool {
         return false
     }
 
-    defer func() {
-        io.Copy(io.Discard, resp.Body)
-        resp.Body.Close()
-    }()
+    defer resp.Body.Close()
 
     body, err := io.ReadAll(resp.Body)
     if err != nil {

@@ -3,7 +3,6 @@ services:
   ts3:
     image: teamspeak
     container_name: teamspeak
-    restart: always
     depends_on:
       - ts3db
     ports:
@@ -26,12 +25,12 @@ services:
       TS3SERVER_DB_NAME: teamspeak
       TS3SERVER_DB_WAITUNTILREADY: 30
       TS3SERVER_LICENSE: accept
+#      TS3SERVER_QUERY_TIMEOUT: 15
     networks:
       - ts3
   ts3db:
     image: mariadb
     container_name: ts3db
-    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ts3db:/var/lib/mysql
@@ -46,7 +45,6 @@ services:
   ts3manager:
     image: joni1802/ts3-manager
     container_name: ts3manager
-    restart: always
     ports:
       - "8080:8080"
     depends_on:

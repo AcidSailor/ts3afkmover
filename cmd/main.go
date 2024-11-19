@@ -42,7 +42,7 @@ func main() {
 
     var wg sync.WaitGroup
     ticker := time.NewTicker(time.Duration(config.IdleCheckInterval) * time.Minute)
-    sigs := make(chan os.Signal)
+    sigs := make(chan os.Signal, 1)
 
     signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
