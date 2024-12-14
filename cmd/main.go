@@ -2,7 +2,6 @@ package main
 
 import (
     "context"
-    "fmt"
     "github.com/acidsailor/ts3afkmover/configs"
     "github.com/acidsailor/ts3afkmover/internal/controllers"
     "github.com/acidsailor/ts3afkmover/internal/usecases"
@@ -36,7 +35,6 @@ func main() {
         ),
     )
 
-    fmt.Println()
     ctx, cancel := context.WithCancel(context.Background())
     defer cancel()
 
