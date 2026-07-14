@@ -30,5 +30,6 @@ go.work.sum
 /.task/
 
 # Local agent tooling
-/.claude/
+/.claude/*
+!/.claude/skills/
 /.worktrees/
