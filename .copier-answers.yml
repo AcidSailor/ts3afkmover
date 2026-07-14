@@ -1,5 +1,5 @@
 # Changes here will be overwritten by Copier; NEVER EDIT MANUALLY.
-_commit: v1.0.0
+_commit: v1.6.0
 _src_path: gh:acidsailor/go-scaffolds
 author: Denis Shaporov / acidsailor
 author_email: d@shaporov.dev
@@ -8,3 +8,4 @@ go_version: '1.23'
 module_path: github.com/acidsailor/ts3afkmover
 project_name: ts3afkmover
 project_type: cli
+
