@@ -5,61 +5,58 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 	"time"
 
-	"github.com/acidsailor/ts3afkmover/configs"
-	"github.com/acidsailor/ts3afkmover/internal/controllers"
-	"github.com/acidsailor/ts3afkmover/internal/usecases"
+	"github.com/acidsailor/ts3afkmover/config"
+	"github.com/acidsailor/ts3afkmover/internal/idle"
+	"github.com/acidsailor/ts3afkmover/internal/ts3"
 )
 
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		AddSource: true,
-	}))
+	slog.SetDefault(
+		slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			AddSource: true,
+		})),
+	)
 
-	config, err := configs.NewConfig()
+	cfg, err := config.New()
 	if err != nil {
-		logger.Error(
+		slog.Error(
 			"error initializing config",
 			slog.String("err", err.Error()),
 		)
 		os.Exit(1)
 	}
 
-	idleUsecase := usecases.NewTs3IdleUsecase(
-		config, logger, controllers.NewTs3Client(
-			config,
-			logger,
-		),
+	client, err := ts3.New(cfg)
+	if err != nil {
+		slog.Error(
+			"error initializing ts3 client",
+			slog.String("err", err.Error()),
+		)
+		os.Exit(1)
+	}
+
+	mover := idle.New(cfg, client)
+
+	ctx, stop := signal.NotifyContext(
+		context.Background(), syscall.SIGINT, syscall.SIGTERM,
 	)
+	defer stop()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ticker := time.NewTicker(cfg.TickInterval())
+	defer ticker.Stop()
 
-	var wg sync.WaitGroup
-	ticker := time.NewTicker(
-		time.Duration(config.IdleCheckInterval) * time.Minute,
-	)
-	sigs := make(chan os.Signal, 1)
+	slog.InfoContext(ctx, "starting application")
 
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
-	logger.InfoContext(ctx, "starting application")
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		defer ticker.Stop()
-		for {
-			select {
-			case <-sigs:
-				return
-			case <-ticker.C:
-				idleUsecase.MoveIdleClients(ctx)
-			}
+	for {
+		select {
+		case <-ctx.Done():
+			slog.InfoContext(ctx, "shutting down")
+			return
+		case <-ticker.C:
+			mover.MoveIdleClients(ctx)
 		}
-	}()
-	wg.Wait()
+	}
 }
