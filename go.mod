@@ -3,7 +3,7 @@ module github.com/acidsailor/ts3afkmover
 go 1.26.0
 
 require (
-	github.com/acidsailor/restkit v0.2.0
+	github.com/acidsailor/restkit v0.2.1
 	github.com/caarlos0/env/v11 v11.4.1
 )
 
