@@ -1,9 +1,9 @@
 module github.com/acidsailor/ts3afkmover
 
-go 1.26.0
+go 1.27.0
 
 require (
-	github.com/acidsailor/restkit v0.3.0
+	github.com/acidsailor/restkit v0.3.1
 	github.com/caarlos0/env/v11 v11.4.2
 )
 
@@ -32,13 +32,13 @@ require (
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/tdewolff/parse/v2 v2.8.12 // indirect
 	github.com/tdewolff/test v1.0.12 // indirect
-	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.71.0 // indirect
+	go.opentelemetry.io/auto/sdk v1.2.2 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.72.0 // indirect
 	go.opentelemetry.io/otel v1.47.0 // indirect
 	go.opentelemetry.io/otel/log v1.47.0 // indirect
 	go.opentelemetry.io/otel/metric v1.47.0 // indirect
 	go.opentelemetry.io/otel/trace v1.47.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
